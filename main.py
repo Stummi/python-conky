@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+deps:
+  python3 python3-psutil python3-pyqt5
+
+"""
+
 import sys
+import platform
+
+import psutil
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
 from PyQt5.QtGui import QPainter, QColor, QFont, QImage
 from PyQt5.QtCore import Qt, QTimer
@@ -30,15 +39,32 @@ class Config:
     windowGeometry = (300, 300, 280, 170)
     updateInterval = 1000
 
+
     def drawBackground(self, event, painter):
         background = QImage("/home/mkl/Bilder/debian_red_metal_hex_by_monkeymagico.jpg")
         painter.drawImage(0, 0, background)
-    
+        
     def draw(self, event, painter):
+        """
+        TODO describe purpose of this function
+
+        this function gets two arguments:
+         event - a QPaintEvent, which contains the dimensions of the surface that should be (re)drawn as rect()
+         painter - an initialized QPainter that should be used to draw, will be destroyed afterwards
+
+        
+        """
         painter.setPen(QColor(168, 34, 3, 255))
         painter.setFont(QFont('Terminus', 50))
         painter.drawText(event.rect(), Qt.AlignCenter, "Boring Random Text: üäö")
         painter.drawLine(20, 20, 1000, 20)
+
+        painter.setPen(QColor(255, 0, 0, 255))
+        painter.drawText(20, 40, str(psutil.cpu_percent(percpu=True)))
+        x = 60
+        for key, value in psutil.cpu_times_percent(percpu=False)._asdict().items():
+            painter.drawText(20, x, "{}: \t{}".format(key, value))
+            x += 20
     
 config = Config()
 
@@ -46,6 +72,11 @@ class SysInfo():
     import platform
     print(platform.uname(), platform.system_alias(platform.system(), platform.release(), platform.version()))
 
+    import psutil
+    psutil.boot_time()
+    psutil.cpu_count(logical=False)
+    psutil.cpu_percent(percpu=True)
+    
     
 
 class MainWin(QMainWindow):
