@@ -48,7 +48,7 @@ class Config:
         """
         TODO describe purpose of this function
 
-        this function gets two arguments:
+        this function receives two parameters:
          event - a QPaintEvent, which contains the dimensions of the surface that should be (re)drawn as rect()
          painter - an initialized QPainter that should be used to draw, will be destroyed afterwards
 
@@ -56,7 +56,7 @@ class Config:
         """
         painter.setPen(QColor(168, 34, 3, 255))
         painter.setFont(QFont('Terminus', 50))
-        painter.drawText(event.rect(), Qt.AlignCenter, "Boring Random Text: üäö")
+        painter.drawText(event.rect(), Qt.AlignCenter, "Boring Non-Random Text to test Unicode: üäö")
         painter.drawLine(20, 20, 1000, 20)
 
         painter.setPen(QColor(255, 0, 0, 255))
@@ -102,7 +102,7 @@ class MainWin(QMainWindow):
         self.timer.start(config.updateInterval)
 
     def paintEvent(self, event):
-        logger.debug("paintEvent: {0} - {1} - {2}".format(self, event.rect(), event.region().rects()))
+        logger.debug("paintEvent: {0} - {1}".format(self, event.rect()))
         qp = QPainter()
         qp.begin(self)
         config.drawBackground(event, qp)
