@@ -1,4 +1,18 @@
+
+# examples on how to get some sysinfo
+class SysInfo():
+    import platform
+    print(platform.uname(), platform.system_alias(platform.system(), platform.release(), platform.version()))
+
+    import psutil
+    psutil.boot_time()
+    psutil.cpu_count(logical=False)
+    psutil.cpu_percent(percpu=True)    
+
+
 class Config:
+    # set to True, if you want transparency and have a composition manager
+    # running, False emulates transparency by drawing a background image
     realTransparency = True
     windowTitle = 'python-conky'
     windowOpacity = 1

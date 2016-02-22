@@ -49,15 +49,6 @@ exec(config_str)
         
 config = Config()
 
-class SysInfo():
-    import platform
-    print(platform.uname(), platform.system_alias(platform.system(), platform.release(), platform.version()))
-
-    import psutil
-    psutil.boot_time()
-    psutil.cpu_count(logical=False)
-    psutil.cpu_percent(percpu=True)    
-
 class MainWin(QMainWindow):
     
     def __init__(self):
