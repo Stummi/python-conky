@@ -5,16 +5,12 @@
 deps:
   python3 python3-psutil python3-pyqt5
 
+may also use python-mpd, but it seems that debian packages that module only for 
+python2, manual install via pip(pip3 on debian) required
+
 """
 
 import sys
-import platform
-
-import psutil
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
-from PyQt5.QtGui import QPainter, QColor, QFont, QImage
-from PyQt5.QtCore import Qt, QTimer
-
 import logging
 
 def confLogging():
@@ -31,41 +27,26 @@ confLogging()
 
 logger = logging.getLogger(__name__)
 
+import platform
+import psutil
+from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
+from PyQt5.QtGui import QPainter, QColor, QFont, QPixmap
+from PyQt5.QtCore import Qt, QTimer
+import widgets
 
-class Config:
-    realTransparency = False
-    windowTitle = 'python-conky'
-    windowOpacity = 1.0
-    windowGeometry = (300, 300, 280, 170)
-    updateInterval = 1000
+import argparse
+parser = argparse.ArgumentParser(description="A more flexible replacement for conky written in python")
+parser.add_argument("-c", "--config", help="path to the configuration file" )
+args = parser.parse_args()
 
-
-    def drawBackground(self, event, painter):
-        background = QImage("/home/mkl/Bilder/debian_red_metal_hex_by_monkeymagico.jpg")
-        painter.drawImage(0, 0, background)
+import os.path
+config_path = args.config or "~/.python-conkyrc"
+config_path = os.path.expanduser(config_path)
+config_str = ''
+with open(config_path, 'rb') as config_file:
+    config_str = config_file.read()
+exec(config_str)
         
-    def draw(self, event, painter):
-        """
-        TODO describe purpose of this function
-
-        this function receives two parameters:
-         event - a QPaintEvent, which contains the dimensions of the surface that should be (re)drawn as rect()
-         painter - an initialized QPainter that should be used to draw, will be destroyed afterwards
-
-        
-        """
-        painter.setPen(QColor(168, 34, 3, 255))
-        painter.setFont(QFont('Terminus', 50))
-        painter.drawText(event.rect(), Qt.AlignCenter, "Boring Non-Random Text to test Unicode: üäö")
-        painter.drawLine(20, 20, 1000, 20)
-
-        painter.setPen(QColor(255, 0, 0, 255))
-        painter.drawText(20, 40, str(psutil.cpu_percent(percpu=True)))
-        x = 60
-        for key, value in psutil.cpu_times_percent(percpu=False)._asdict().items():
-            painter.drawText(20, x, "{}: \t{}".format(key, value))
-            x += 20
-    
 config = Config()
 
 class SysInfo():
@@ -75,22 +56,21 @@ class SysInfo():
     import psutil
     psutil.boot_time()
     psutil.cpu_count(logical=False)
-    psutil.cpu_percent(percpu=True)
-    
-    
+    psutil.cpu_percent(percpu=True)    
 
 class MainWin(QMainWindow):
     
     def __init__(self):
         super(QMainWindow, self).__init__(None, Qt.WindowStaysOnBottomHint | Qt.FramelessWindowHint)
         self.initUI()
+        config.initUI(self)
         self.initTimer()
-                
+        
     def initUI(self):
         if(config.realTransparency):
             self.setAttribute(Qt.WA_NoSystemBackground, True)
             self.setAttribute(Qt.WA_TranslucentBackground, True)  
-            self.setAttribute(Qt.WA_PaintOnScreen, True)
+            #self.setAttribute(Qt.WA_PaintOnScreen, True)
             self.setWindowOpacity(config.windowOpacity)
         self.setGeometry(*config.windowGeometry)
         self.setWindowTitle(config.windowTitle)
@@ -101,12 +81,16 @@ class MainWin(QMainWindow):
         self.timer.timeout.connect(self.update)
         self.timer.start(config.updateInterval)
 
+    def drawBackground(self, event, painter):
+        background = QPixmap("/home/mkl/Bilder/debian_red_metal_hex_by_monkeymagico.jpg")        
+        painter.drawPixmap(event.rect(), background)
+        
     def paintEvent(self, event):
         logger.debug("paintEvent: {0} - {1}".format(self, event.rect()))
         qp = QPainter()
         qp.begin(self)
-        config.drawBackground(event, qp)
-        config.draw(event, qp)
+        if not config.realTransparency:
+            self.drawBackground(event, qp)
         qp.end()
         logger.debug("paintEvent End: " + str(self))
 

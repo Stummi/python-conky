@@ -1,0 +1,19 @@
+class Config:
+    realTransparency = True
+    windowTitle = 'python-conky'
+    windowOpacity = 1
+    windowGeometry = (300, 300, 280, 170)
+    updateInterval = 1000
+
+    def initUI(self, mainWindow):
+        cpu_plot = widgets.plot(lambda : psutil.cpu_percent(), parent = mainWindow, data_interval=100, redraw_interval = 1000)
+        cpu_plot.resize(400, 100)
+        cpu_plot.move(300, 100)
+        
+        cpu_bar = widgets.fillbar(lambda : psutil.cpu_percent(), parent = mainWindow, redraw_interval = 1000)
+        cpu_bar.resize(500, 100)
+        cpu_bar.move(300, 200)
+
+        stack_plot = widgets.stackedplot(lambda : psutil.cpu_percent(percpu=True), 4, parent = mainWindow, data_interval=50, redraw_interval = 50)
+        stack_plot.resize(600, 100)
+        stack_plot.move(300, 300)
