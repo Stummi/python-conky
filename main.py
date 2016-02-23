@@ -55,7 +55,7 @@ class MainWin(QMainWindow):
         super(QMainWindow, self).__init__(None, Qt.WindowStaysOnBottomHint | Qt.FramelessWindowHint)
         self.initUI()
         config.initUI(self)
-        self.initTimer()
+        self.initTimer(config.mainWindowUpdateInterval)
         
     def initUI(self):
         if(config.realTransparency):
@@ -67,21 +67,25 @@ class MainWin(QMainWindow):
         self.setWindowTitle(config.windowTitle)
         self.show()
 
-    def initTimer(self):
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update)
-        self.timer.start(config.updateInterval)
+    def initTimer(self, redraw_interval):
+        if(redraw_interval):
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.update)
+            self.timer.start(redraw_interval)
 
     def drawBackground(self, event, painter):
-        background = QPixmap("/home/mkl/Bilder/debian_red_metal_hex_by_monkeymagico.jpg")        
-        painter.drawPixmap(event.rect(), background)
+        if(config.backgroundImage):
+            painter.drawPixmap(0, 0, self.size().width(), self.size().height(), config.backgroundImage)
+        elif(config.backgroundColor):
+            painter.setPen(config.backgroundColor)
+            painter.setBrush(config.backgroundColor)
+            painter.drawRect(0, 0, self.size().width(), self.size().height())        
         
     def paintEvent(self, event):
         logger.debug("paintEvent: {0} - {1}".format(self, event.rect()))
         qp = QPainter()
         qp.begin(self)
-        if not config.realTransparency:
-            self.drawBackground(event, qp)
+        self.drawBackground(event, qp)
         qp.end()
         logger.debug("paintEvent End: " + str(self))
 

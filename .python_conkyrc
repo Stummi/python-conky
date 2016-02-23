@@ -11,15 +11,19 @@ class SysInfo():
 
 
 class Config:
-    # set to True, if you want transparency and have a composition manager
-    # running, False emulates transparency by drawing a background image
-    realTransparency = True
+    # set to True, if you want a transparent/translucent background and have
+    # a composition manager running
+    realTransparency = False
+    backgroundImage = None # qt doesn't like it if i construct a QPixmap before a QApplication
+    #backgroundColor = QColor(0, 0, 0, 100)
     windowTitle = 'python-conky'
     windowOpacity = 1
     windowGeometry = (300, 300, 280, 170)
-    updateInterval = 1000
+    mainWindowUpdateInterval = None
 
     def initUI(self, mainWindow):
+        self.backgroundImage = QPixmap("/home/mkl/Bilder/debian_red_metal_hex_by_monkeymagico.jpg")
+        
         cpu_plot = widgets.plot(lambda : psutil.cpu_percent(), parent = mainWindow, data_interval=100, redraw_interval = 1000)
         cpu_plot.resize(400, 100)
         cpu_plot.move(300, 100)
