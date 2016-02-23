@@ -56,6 +56,7 @@ class MainWin(QMainWindow):
         self.initUI()
         config.initUI(self)
         self.initTimer(config.mainWindowUpdateInterval)
+        self.show()
         
     def initUI(self):
         if(config.realTransparency):
@@ -65,7 +66,6 @@ class MainWin(QMainWindow):
             self.setWindowOpacity(config.windowOpacity)
         self.setGeometry(*config.windowGeometry)
         self.setWindowTitle(config.windowTitle)
-        self.show()
 
     def initTimer(self, redraw_interval):
         if(redraw_interval):
