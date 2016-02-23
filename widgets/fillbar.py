@@ -4,7 +4,7 @@
 import sys
 import logging
 from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtGui import QPainter, QColor, QFont, QImage
+from PyQt5.QtGui import QPainter, QColor, QFont, QImage, QPalette
 from PyQt5.QtCore import Qt, QTimer
 
 logger = logging.getLogger(__name__)
@@ -28,9 +28,8 @@ class fillbar(QWidget):
         >>> static_plot = plot(static, data_interval=100)
         """
         super(fillbar, self).__init__(parent = parent)
-        self.palette().Background = QColor(255, 0, 0)
-        self.border_color = QColor(255, 0, 0)
-        self.bar_color = QColor(0, 255, 0)
+        self.border_color = self.palette().color(QPalette.Window)
+        self.bar_color = self.palette().color(QPalette.Text)
         self.orientation  = 'horizontal'
         self.data_source = data_source
         self.max_range = max_range

@@ -5,7 +5,7 @@ import sys
 import collections
 import logging
 from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtGui import QPainter, QColor, QFont, QImage
+from PyQt5.QtGui import QPainter, QColor, QFont, QImage, QPalette
 from PyQt5.QtCore import Qt, QTimer, QPoint
 
 logger = logging.getLogger(__name__)
@@ -33,9 +33,8 @@ class plot(QWidget):
         >>> static_plot = plot(static, data_interval=100)
         """
         super(plot, self).__init__(parent = parent)
-        self.palette().Background = QColor(255, 0, 0)
-        self.border_color = QColor(255, 0, 0)
-        self.plot_color = QColor(0, 255, 0)
+        self.border_color = self.palette().color(QPalette.Window)
+        self.plot_color = self.palette().color(QPalette.Text)
         self.data_source = data_source
 
         self.data = collections.deque(maxlen=100)
